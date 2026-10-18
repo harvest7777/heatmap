@@ -117,11 +117,11 @@ Visualizing:
 
 Claude's response and implementation plan:
 
-Decisions: `&trans` presses count on both layers (overall heatmap accepts the double count), counts are halved with floor division before writing, `sessions/` is gitignored, and the port is matched with `/dev/cu.usbmodem*`.
+Decisions: `&trans` presses count on both layers (overall heatmap accepts the double count), counts are halved with floor division before writing, `sessions/` is gitignored, the port is passed as the first argument, and the label is optional (defaults to `unnamed`).
 
 Expected use:
 ```
-./log.sh coding
+./log.sh /dev/cu.usbmodem1101 coding
 Connected.
 Logging cu.usbmodem1101 to sessions/2026-10-18T14-02-11_coding.json
 
@@ -130,15 +130,15 @@ Saved to sessions/2026-10-18T14-02-11_coding.json, sessions/.2026-10-18T14-02-11
 ```
 
 Files:
-- `log.sh`: entry point, `./log.sh <label>`.
+- `log.sh`: entry point, `./log.sh <port> [label]`.
 - `count.awk`: parses lines, keeps counts, writes the JSON.
 - `.gitignore`: ignores `sessions/`.
 - `sessions/`: output, created on first run.
 
 `log.sh`:
-1. Require a label; exit with usage if it's missing.
+1. Label is the optional second argument; default to `unnamed` if it's missing.
     - default to just "unnamed", dont exit if its missing
-2. Find the port with `/dev/cu.usbmodem*`. Exit if there's none; if there are several, take the first and say which.
+2. Port is the required first argument (full path, e.g. `/dev/cu.usbmodem1101`). Exit with usage if it's missing.
     - make this a command like argument. we will have the full path so ./log.sh /dev/cu.usbmodem1101, exit if none given
 3. Run `sudo -v` up front, so the password prompt comes before anything else is printed.
 4. Set the file names: `sessions/<YYYY-MM-DDTHH-MM-SS>_<label>.json` and the temp file `sessions/.<same name>.tmp.json`.
