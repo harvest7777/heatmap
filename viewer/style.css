@@ -106,6 +106,8 @@ h1 { font-size: 20px; margin: 0; }
   font: inherit;
   font-variant: small-caps;
 }
+/* Overall isn't a layer, so it sits apart at the end */
+.layer-selector li.overall { margin-left: 16px; }
 .layer-selector li button:hover { background-color: rgba(60, 179, 113, 0.85); color: white; }
 .layer-selector li button[aria-selected="true"] { background-color: var(--accent); color: white; }
 

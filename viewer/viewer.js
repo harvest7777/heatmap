@@ -71,7 +71,7 @@ const boardHeight = Math.ceil(Math.max(...allCorners.map((c) => c[1])) - minY);
 
 const state = {
   files: new Map(), // name -> { counts: { layer: { position: n } }, total }
-  view: 'overall', // 'overall' or a layer number
+  view: 0, // a layer number or 'overall'
   mode: 'gradient',
   keymap: null, // { name, layers: [{ name, labels }], warnings }
 };
@@ -215,7 +215,7 @@ function layerCount() {
 }
 
 function renderTabs() {
-  const views = ['overall', ...Array.from({ length: layerCount() }, (_, i) => i)];
+  const views = [...Array.from({ length: layerCount() }, (_, i) => i), 'overall'];
   $('tabs').replaceChildren(
     ...views.map((view) => {
       const li = document.createElement('li');
@@ -229,6 +229,7 @@ function renderTabs() {
         state.view = view;
         render();
       });
+      if (view === 'overall') li.className = 'overall';
       li.append(b);
       return li;
     })
@@ -387,10 +388,9 @@ function parseKeymap(text) {
 }
 
 function labelsForView() {
-  if (!state.keymap) return null;
-  // Overall shows the base layer's labels
-  const layer = state.view === 'overall' ? 0 : state.view;
-  return state.keymap.layers[layer]?.labels ?? null;
+  // Overall mixes every layer, so no single layer's labels fit it
+  if (!state.keymap || state.view === 'overall') return null;
+  return state.keymap.layers[state.view]?.labels ?? null;
 }
 
 function renderLabel(el, label) {
