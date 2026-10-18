@@ -81,18 +81,23 @@ const board = $('board');
 const canvas = $('heat');
 const tooltip = $('tooltip');
 
-// Cold to hot, sampled into 256 colors for both modes
+// Cold to hot, shared by both modes and the legend
+const PALETTE_STOPS = [
+  [0, '#3b4cc0'],
+  [0.35, '#2fb5d5'],
+  [0.55, '#5fd35f'],
+  [0.75, '#f5d33c'],
+  [1, '#d7301f'],
+];
+
+// Sampled into 256 colors
 const palette = (() => {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 1;
   const ctx = c.getContext('2d');
   const g = ctx.createLinearGradient(0, 0, 256, 0);
-  g.addColorStop(0, '#3b4cc0');
-  g.addColorStop(0.35, '#2fb5d5');
-  g.addColorStop(0.55, '#5fd35f');
-  g.addColorStop(0.75, '#f5d33c');
-  g.addColorStop(1, '#d7301f');
+  for (const [at, c] of PALETTE_STOPS) g.addColorStop(at, c);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 1);
   return ctx.getImageData(0, 0, 256, 1).data;
@@ -199,6 +204,8 @@ function render() {
     el.style.backgroundColor = state.mode === 'keys' && n > 0 ? color(Math.max(t(n), 0.04)) : '';
     renderLabel(el, labelsForView()?.[el.dataset.position]);
   }
+
+  $('legend-max').textContent = Math.max(0, ...counts) ? Math.max(...counts).toLocaleString() : '';
 
   renderTabs();
   renderFiles();
@@ -526,6 +533,7 @@ $('keymap-picker').addEventListener('change', (e) => {
   addKeymap(e.target.files);
   e.target.value = '';
 });
+$('legend-bar').style.background = `linear-gradient(to top, ${PALETTE_STOPS.map(([at, c]) => `${c} ${at * 100}%`).join(', ')})`;
 window.addEventListener('resize', fit);
 
 buildKeys();

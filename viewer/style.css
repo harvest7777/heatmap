@@ -111,7 +111,37 @@ h1 { font-size: 20px; margin: 0; }
 .layer-selector li button:hover { background-color: rgba(60, 179, 113, 0.85); color: white; }
 .layer-selector li button[aria-selected="true"] { background-color: var(--accent); color: white; }
 
-#board-wrap { position: relative; }
+.viz {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
+#board-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+#legend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 64px;
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+#legend .end { line-height: 1.2; }
+#legend .count { display: block; font-variant-numeric: tabular-nums; }
+#legend-bar {
+  flex: 1;
+  width: 14px;
+  min-height: 80px;
+  border-radius: 7px;
+}
 
 /* Scaled down by viewer.js to fit narrow screens */
 #board {

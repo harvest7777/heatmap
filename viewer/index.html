@@ -20,13 +20,21 @@
       <ul id="tabs" role="tablist"></ul>
     </nav>
 
-    <section id="board-wrap" aria-label="Keyboard">
-      <div id="board">
-        <canvas id="heat"></canvas>
-        <div id="keys"></div>
-      </div>
-      <div id="tooltip" hidden></div>
-    </section>
+    <div class="viz">
+      <section id="board-wrap" aria-label="Keyboard">
+        <div id="board">
+          <canvas id="heat"></canvas>
+          <div id="keys"></div>
+        </div>
+        <div id="tooltip" hidden></div>
+      </section>
+
+      <aside id="legend" aria-label="Color legend">
+        <span class="end">Most used<span id="legend-max" class="count"></span></span>
+        <div id="legend-bar"></div>
+        <span class="end">Least used</span>
+      </aside>
+    </div>
 
     <section id="drop" class="zone" aria-label="Session files">
       <h2>Sessions</h2>
