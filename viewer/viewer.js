@@ -316,7 +316,7 @@ function bindingLabel({ behavior, params }) {
     case 'none':
       return { tag: '', text: '' };
     case 'kp':
-      return { tag: '', text: keycodeLabel(params[0] ?? '') };
+      return { tag: '', text: keycodeLabel(params[0] ?? ''), icon: KEYCODE_ICONS[params[0]] };
     case 'bt':
       return { tag: 'bt', text: params.map((p) => p.replace(/^BT_/, '')).join(' ') };
     default:
@@ -405,8 +405,12 @@ function renderLabel(el, label) {
   }
   const text = document.createElement('span');
   text.className = 'label';
-  text.textContent = label.text;
-  if (label.text.length > 3) text.dataset.long = 'true';
+  if (label.icon) {
+    text.innerHTML = ICON_SVGS[label.icon]; // static SVG from icons.js
+  } else {
+    text.textContent = label.text;
+    if (label.text.length > 3) text.dataset.long = 'true';
+  }
   el.append(text);
   el.dataset.binding = [label.tag, label.text].filter(Boolean).join(' ');
 }

@@ -147,6 +147,7 @@ h1 { font-size: 20px; margin: 0; }
   font-size: 18px;
 }
 .key .label[data-long="true"] { font-size: 11px; }
+.key .label svg { display: block; height: 18px; width: auto; }
 .key .tag {
   position: absolute;
   top: 0;
