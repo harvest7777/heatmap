@@ -34,6 +34,7 @@ const SIZE = 65;
 const PADDING = 5;
 const UNIT = SIZE + PADDING;
 const BASE_LAYERS = 4;
+const GRADIENT_OPACITY = 200; // of 255
 
 // keymap-editor draws the halves one key further apart than ZMK's layout
 const RIGHT_HALF_SHIFT = 100;
@@ -149,12 +150,13 @@ function drawGradient(counts) {
   ctx.scale(ratio, ratio);
 
   // Soft blobs centered on each key, alpha by intensity, then colored by the
-  // summed alpha. Blobs spill into neighbors on purpose: this mode shows where
-  // the fingers spend time, not which exact keys were pressed.
+  // summed alpha. Each blob stays about the size of its key so neighbors only
+  // just touch, and squaring the log scale lets light keys fade out instead of
+  // the whole board turning yellow.
   const t = scale(counts);
-  const radius = UNIT * 1.1;
+  const radius = UNIT * 0.8;
   for (const k of keys) {
-    const v = t(counts[k.position]);
+    const v = t(counts[k.position]) ** 2;
     if (!v) continue;
     const [cx, cy] = [k.center[0] - minX, k.center[1] - minY];
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
@@ -173,7 +175,8 @@ function drawGradient(counts) {
     px[i] = palette[j];
     px[i + 1] = palette[j + 1];
     px[i + 2] = palette[j + 2];
-    px[i + 3] = Math.min(255, a * 1.4);
+    // Semi-transparent, so the keys stay readable underneath
+    px[i + 3] = Math.min(GRADIENT_OPACITY, a * 2);
   }
   ctx.putImageData(img, 0, 0);
 }
