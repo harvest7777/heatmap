@@ -73,6 +73,7 @@ const state = {
   files: new Map(), // name -> { counts: { layer: { position: n } }, total }
   view: 'overall', // 'overall' or a layer number
   mode: 'gradient',
+  keymap: null, // { name, layers: [{ name, labels }], warnings }
 };
 
 const $ = (id) => document.getElementById(id);
@@ -195,15 +196,17 @@ function render() {
     el.classList.toggle('zero', n === 0);
     // Keys mode: one solid color per key; a tiny floor keeps rare keys visible
     el.style.backgroundColor = state.mode === 'keys' && n > 0 ? color(Math.max(t(n), 0.04)) : '';
+    renderLabel(el, labelsForView()?.[el.dataset.position]);
   }
 
   renderTabs();
   renderFiles();
+  renderKeymap();
   fit();
 }
 
 function layerCount() {
-  let max = BASE_LAYERS - 1;
+  let max = Math.max(BASE_LAYERS, state.keymap?.layers.length ?? 0) - 1;
   for (const { counts } of state.files.values()) {
     for (const layer of Object.keys(counts)) max = Math.max(max, Number(layer));
   }
@@ -218,7 +221,8 @@ function renderTabs() {
       const b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('role', 'tab');
-      b.textContent = view === 'overall' ? 'Overall' : `Layer ${view}`;
+      const name = state.keymap?.layers[view]?.name;
+      b.textContent = view === 'overall' ? 'Overall' : name ? `${view} ${name}` : `Layer ${view}`;
       b.setAttribute('aria-selected', String(view === state.view));
       b.addEventListener('click', () => {
         state.view = view;
@@ -272,6 +276,10 @@ function parseSession(text) {
 async function addFiles(fileList) {
   const skipped = [];
   for (const file of fileList) {
+    if (!file.name.endsWith('.json')) {
+      skipped.push(`${file.name} (sessions must be .json)`);
+      continue;
+    }
     // The same session dropped twice would double its counts
     if (state.files.has(file.name)) {
       skipped.push(`${file.name} (already loaded)`);
@@ -287,6 +295,167 @@ async function addFiles(fileList) {
   if (skipped.length) alert(`Skipped:\n${skipped.join('\n')}`);
 }
 
+// --- Keymap labels -------------------------------------------------------
+
+// Short forms for common behaviors; anything else shows its name in the corner
+// and its parameters as the label, like keymap-editor
+const MOD_PREFIX = { LS: '⇧', RS: '⇧', LC: '⌃', RC: '⌃', LA: '⌥', RA: '⌥', LG: '⌘', RG: '⌘' };
+
+function keycodeLabel(code) {
+  // Modifier functions like LG(SQT) or LC(LS(TAB))
+  const fn = code.match(/^([A-Z]{2})\((.+)\)$/);
+  if (fn && MOD_PREFIX[fn[1]]) return MOD_PREFIX[fn[1]] + keycodeLabel(fn[2]);
+  return KEYCODE_LABELS[code] ?? code;
+}
+
+function bindingLabel({ behavior, params }) {
+  switch (behavior) {
+    case 'trans':
+      return { tag: '', text: '▽' };
+    case 'none':
+      return { tag: '', text: '' };
+    case 'kp':
+      return { tag: '', text: keycodeLabel(params[0] ?? '') };
+    case 'bt':
+      return { tag: 'bt', text: params.map((p) => p.replace(/^BT_/, '')).join(' ') };
+    default:
+      return { tag: behavior, text: params.map(keycodeLabel).join(' ') };
+  }
+}
+
+// Object-like #defines only (e.g. #define BASE 0); function-like macros are left as is
+function applyDefines(text) {
+  const defines = {};
+  const body = text.replace(/^[ \t]*#define[ \t]+([A-Za-z_]\w*)(?!\()[ \t]+(.+)$/gm, (_, name, value) => {
+    defines[name] = value.trim();
+    return '';
+  });
+  const names = Object.keys(defines);
+  if (!names.length) return body;
+  const re = new RegExp(`\\b(${names.join('|')})\\b`, 'g');
+  return body.replace(re, (name) => defines[name]);
+}
+
+// Returns the text between the brace at `open` and its match
+function braceBody(text, open) {
+  let depth = 0;
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}' && --depth === 0) return text.slice(open + 1, i);
+  }
+  throw new Error('unbalanced braces');
+}
+
+function parseKeymap(text) {
+  text = applyDefines(text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''));
+
+  const compat = text.search(/compatible\s*=\s*"zmk,keymap"/);
+  if (compat < 0) throw new Error('no node with compatible = "zmk,keymap"');
+  const body = braceBody(text, text.lastIndexOf('{', compat));
+
+  const layers = [];
+  const warnings = [];
+  // Each child node of the keymap node is a layer, in order
+  const child = /(?:[\w-]+:\s*)?([\w-]+)\s*\{/g;
+  let m;
+  while ((m = child.exec(body))) {
+    const open = m.index + m[0].length - 1;
+    const node = braceBody(body, open);
+    child.lastIndex = open + node.length + 2;
+
+    const bindings = node.match(/bindings\s*=\s*<([^>]*)>/)?.[1];
+    if (bindings === undefined) continue;
+    const name = node.match(/display-name\s*=\s*"([^"]*)"/)?.[1] || m[1];
+    const parsed = bindings
+      .split('&')
+      .slice(1)
+      .map((b) => {
+        const [behavior, ...params] = b.trim().split(/\s+/);
+        return { behavior, params };
+      });
+
+    if (parsed.length !== LAYOUT.length) {
+      warnings.push(`${name}: ${parsed.length} bindings, expected ${LAYOUT.length}; labels skipped`);
+      layers.push({ name, labels: null });
+      continue;
+    }
+    layers.push({ name, labels: parsed.map(bindingLabel) });
+  }
+  if (!layers.length) throw new Error('no layers with bindings found');
+  return { layers, warnings };
+}
+
+function labelsForView() {
+  if (!state.keymap) return null;
+  // Overall shows the base layer's labels
+  const layer = state.view === 'overall' ? 0 : state.view;
+  return state.keymap.layers[layer]?.labels ?? null;
+}
+
+function renderLabel(el, label) {
+  el.replaceChildren();
+  delete el.dataset.binding;
+  if (!label) return;
+  if (label.tag) {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = label.tag;
+    el.append(tag);
+  }
+  const text = document.createElement('span');
+  text.className = 'label';
+  text.textContent = label.text;
+  if (label.text.length > 3) text.dataset.long = 'true';
+  el.append(text);
+  el.dataset.binding = [label.tag, label.text].filter(Boolean).join(' ');
+}
+
+function renderKeymap() {
+  const items = [];
+  if (state.keymap) {
+    const li = document.createElement('li');
+    const label = document.createElement('span');
+    label.className = 'name';
+    label.textContent = state.keymap.name;
+    const layers = document.createElement('span');
+    layers.className = 'total';
+    layers.textContent = `${state.keymap.layers.length} layers`;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', `Remove ${state.keymap.name}`);
+    remove.addEventListener('click', () => {
+      state.keymap = null;
+      render();
+    });
+    li.append(label, layers, remove);
+    items.push(li);
+    for (const w of state.keymap.warnings) {
+      const warn = document.createElement('li');
+      warn.className = 'warning';
+      warn.textContent = w;
+      items.push(warn);
+    }
+  }
+  $('keymap-files').replaceChildren(...items);
+}
+
+async function addKeymap(fileList) {
+  const file = fileList[0];
+  if (!file) return;
+  if (!file.name.endsWith('.keymap')) {
+    alert(`Skipped ${file.name}: the keymap must be a ZMK .keymap file`);
+    return;
+  }
+  try {
+    state.keymap = { name: file.name, ...parseKeymap(await file.text()) };
+  } catch (err) {
+    alert(`Could not read ${file.name}: ${err.message}`);
+    return;
+  }
+  render();
+}
+
 // Shrink the board to fit narrow screens
 function fit() {
   const available = $('board-wrap').clientWidth;
@@ -297,7 +466,8 @@ function fit() {
 
 function showTooltip(el) {
   const n = Number(el.dataset.count);
-  tooltip.textContent = `Position ${el.dataset.position}: ${n.toLocaleString()} ${n === 1 ? 'press' : 'presses'}`;
+  const label = el.dataset.binding ? ` (${el.dataset.binding})` : '';
+  tooltip.textContent = `Position ${el.dataset.position}${label}: ${n.toLocaleString()} ${n === 1 ? 'press' : 'presses'}`;
   tooltip.hidden = false;
   const wrap = $('board-wrap').getBoundingClientRect();
   const r = el.getBoundingClientRect();
@@ -321,23 +491,34 @@ for (const b of document.querySelectorAll('.mode button')) {
   });
 }
 
-const drop = $('drop');
-for (const type of ['dragenter', 'dragover']) {
-  document.addEventListener(type, (e) => {
+// Two drop zones: sessions take only .json, the keymap only .keymap. Anywhere
+// else, a drop is swallowed so the browser doesn't navigate to the file.
+for (const type of ['dragover', 'drop']) document.addEventListener(type, (e) => e.preventDefault());
+
+function dropZone(zone, onFiles) {
+  zone.addEventListener('dragover', (e) => {
     e.preventDefault();
-    drop.classList.add('over');
+    zone.classList.add('over');
+  });
+  zone.addEventListener('dragleave', (e) => {
+    if (!zone.contains(e.relatedTarget)) zone.classList.remove('over');
+  });
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    zone.classList.remove('over');
+    onFiles(e.dataTransfer.files);
   });
 }
-document.addEventListener('dragleave', (e) => {
-  if (!e.relatedTarget) drop.classList.remove('over');
-});
-document.addEventListener('drop', (e) => {
-  e.preventDefault();
-  drop.classList.remove('over');
-  addFiles(e.dataTransfer.files);
-});
+
+dropZone($('drop'), addFiles);
+dropZone($('keymap-drop'), (files) => addKeymap(files));
 $('picker').addEventListener('change', (e) => {
   addFiles(e.target.files);
+  e.target.value = '';
+});
+$('keymap-picker').addEventListener('change', (e) => {
+  addKeymap(e.target.files);
   e.target.value = '';
 });
 window.addEventListener('resize', fit);

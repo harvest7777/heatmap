@@ -138,6 +138,26 @@ h1 { font-size: 20px; margin: 0; }
 }
 .key:hover { z-index: 1; outline: 2px solid var(--accent); }
 
+/* Labels from a loaded keymap, after keymap-editor's .code and .behaviour-binding */
+.key .label {
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+}
+.key .label[data-long="true"] { font-size: 11px; }
+.key .tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 2px 3px;
+  font-size: 10px;
+  font-variant: small-caps;
+  opacity: 0.6;
+}
+.keys .key:not(.zero) { color: rgba(0, 0, 0, 0.7); }
+
 /* Gradient mode: keys become outlines over the canvas */
 .gradient .key {
   background-color: transparent;
@@ -162,35 +182,38 @@ h1 { font-size: 20px; margin: 0; }
   white-space: nowrap;
 }
 
-#drop {
+.zone {
   margin-top: 24px;
   padding: 16px;
   border: 2px dashed var(--zero-edge);
   border-radius: 8px;
 }
-#drop.over { border-color: var(--accent); }
-#drop p { margin: 0; color: var(--muted); }
+.zone.over { border-color: var(--accent); }
+.zone h2 { font-size: 15px; margin: 0 0 4px; }
+.zone .optional { color: var(--muted); font-weight: normal; font-size: 13px; }
+.zone p { margin: 0; color: var(--muted); }
 
 .pick { color: var(--accent); cursor: pointer; text-decoration: underline; }
 .pick input { display: none; }
 
-#files { list-style: none; margin: 8px 0 0; padding: 0; }
-#files li {
+.file-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.file-list li {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 4px 0;
 }
-#files .name { overflow-wrap: anywhere; }
-#files .total { color: var(--muted); margin-left: auto; white-space: nowrap; }
-#files button {
+.file-list .name { overflow-wrap: anywhere; }
+.file-list .total { color: var(--muted); margin-left: auto; white-space: nowrap; }
+.file-list button {
   border: none;
   background: none;
   color: var(--muted);
   cursor: pointer;
   font-size: 16px;
 }
-#files button:hover { color: crimson; }
+.file-list button:hover { color: crimson; }
+.file-list .warning { color: #c77c00; font-size: 13px; }
 
 footer {
   max-width: 1100px;
