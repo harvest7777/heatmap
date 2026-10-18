@@ -112,3 +112,46 @@ cu: /dev/cu.usbmodem1101: Line in use
 Visualizing:
 - Needs a map from position (0-41) to x/y on the Corne. The per-layer and overall heatmaps are just the same counts grouped differently.
     - we will do this later.
+
+===================================
+
+Claude's response and implementation plan:
+
+Decisions: `&trans` presses count on both layers (overall heatmap accepts the double count), counts are halved with floor division before writing, `sessions/` is gitignored, and the port is matched with `/dev/cu.usbmodem*`.
+
+Expected use:
+```
+./log.sh coding
+Connected.
+Logging cu.usbmodem1101 to sessions/2026-10-18T14-02-11_coding.json
+
+Disconnected.
+Saved to sessions/2026-10-18T14-02-11_coding.json, sessions/.2026-10-18T14-02-11_coding.tmp.json deleted
+```
+
+Files:
+- `log.sh`: entry point, `./log.sh <label>`.
+- `count.awk`: parses lines, keeps counts, writes the JSON.
+- `.gitignore`: ignores `sessions/`.
+- `sessions/`: output, created on first run.
+
+`log.sh`:
+1. Require a label; exit with usage if it's missing.
+2. Find the port with `/dev/cu.usbmodem*`. Exit if there's none; if there are several, take the first and say which.
+3. Run `sudo -v` up front, so the password prompt comes before anything else is printed.
+4. Set the file names: `sessions/<YYYY-MM-DDTHH-MM-SS>_<label>.json` and the temp file `sessions/.<same name>.tmp.json`.
+5. Print `Logging cu.usbmodemXXXX to <path>`.
+6. Run `sudo cu -l "$port" | awk -f count.awk -v out=... -v tmp=...`. Only `cu`'s stdout (the log lines) goes into awk, so `Connected.`/`Disconnected.` still reach the terminal. Confirm which stream `cu` uses for those messages during implementation.
+7. When the pipeline ends, check that the final JSON exists, delete the temp file, and print `Saved to <path>, <tmp> deleted`.
+
+`count.awk`:
+- Matching: `zmk_keymap_apply_position_state: layer_id: N position: M` increments `count[N, M]`. `&trans` lines count on both layers. All other lines are ignored, and nothing is printed, so no keystroke order ever reaches the terminal or disk.
+- Every 50 matches: overwrite the single temp file with the current halved counts, then close it so it actually reaches disk. One overwritten file per session, so snapshots can't be compared to recover typing order.
+- End of input (unplug, `cu` exits): write the final JSON with `int(n/2)` for each count.
+- JSON shape: `{"0": {"13": 120, ...}, "3": {...}}`, sorted by layer then position. Positions never pressed are left out, and the visualizer treats them as 0. A session with no presses writes `{}`.
+
+Testing:
+- Fixture: a small sample log with presses and releases, a `&trans` chain and some unrelated lines. Run it through `count.awk` and check the halving, the `&trans` double count, the ignored lines and the snapshot rewrites.
+- Live run: type some known keys, unplug, check the JSON and that the temp file was deleted.
+
+Not included: visualizing, and combining sessions.
