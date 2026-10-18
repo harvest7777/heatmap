@@ -155,10 +155,11 @@ function drawGradient(counts) {
   // just touch, and squaring the log scale lets light keys fade out instead of
   // the whole board turning yellow.
   const t = scale(counts);
-  const radius = UNIT * 0.8;
   for (const k of keys) {
     const v = t(counts[k.position]) ** 2;
     if (!v) continue;
+    // Hot keys glow strongest at the edge, so shrink them to keep them on their key
+    const radius = UNIT * (0.8 - 0.15 * v);
     const [cx, cy] = [k.center[0] - minX, k.center[1] - minY];
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
     g.addColorStop(0, `rgba(0, 0, 0, ${v})`);
