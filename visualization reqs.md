@@ -88,3 +88,16 @@ Credit for keymap-editor (nickcoutsos/keymap-editor, MIT):
 - Also credit the author visibly in the page footer, with a link to the repo.
 - Files: `viewer/index.html`, `viewer/style.css` and `viewer/viewer.js`, so each stays readable.
 - Hovering a key shows its count in both modes.
+
+==============================
+
+Claude's response (keymap labels):
+
+Decisions:
+- Optional keymap: drop a ZMK `.keymap` file to show key labels per layer, like keymap-editor. Without it, the viewer shows just the heatmap as before.
+- Separate drop zone from sessions for clearer UI. The keymap zone and its picker accept only `.keymap`; the session zone and its picker accept only `.json`. Wrong files are rejected with a message.
+- Layers are read in file order (layer n in the file = `layer_id` n in the logs). Tabs use each layer's `display-name`, or its node name, when a keymap is loaded.
+- The Overall tab shows the base layer's labels.
+- Keycode symbols come from keymap-editor's `zmk-keycodes.json`, credited with its license. Unknown keycodes show raw.
+- Simple `#define`s are substituted; anything fancier shows raw. A layer without one binding per key gets a warning instead of mislabeled keys.
+- Labels are muted so the heatmap stays readable underneath.
