@@ -137,7 +137,9 @@ Files:
 
 `log.sh`:
 1. Require a label; exit with usage if it's missing.
+    - default to just "unnamed", dont exit if its missing
 2. Find the port with `/dev/cu.usbmodem*`. Exit if there's none; if there are several, take the first and say which.
+    - make this a command like argument. we will have the full path so ./log.sh /dev/cu.usbmodem1101, exit if none given
 3. Run `sudo -v` up front, so the password prompt comes before anything else is printed.
 4. Set the file names: `sessions/<YYYY-MM-DDTHH-MM-SS>_<label>.json` and the temp file `sessions/.<same name>.tmp.json`.
 5. Print `Logging cu.usbmodemXXXX to <path>`.
