@@ -86,3 +86,5 @@ Loaded files list:
 Credit for keymap-editor (nickcoutsos/keymap-editor, MIT):
 - Copying its styling counts as copying a substantial part, so MIT requires keeping its copyright notice and license text. Put them in a comment block at the top of the copied CSS (or a `LICENSE-keymap-editor` file).
 - Also credit the author visibly in the page footer, with a link to the repo.
+- Files: `viewer/index.html`, `viewer/style.css` and `viewer/viewer.js`, so each stays readable.
+- Hovering a key shows its count in both modes.
