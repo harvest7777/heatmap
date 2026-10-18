@@ -58,24 +58,24 @@ i dont want to combine every json file so no read operations are needed. this wi
 
 ==============================
 
-claude's assessment of the initial draft above:
+Claude's assessment of the initial draft above:
 
-plan is sound, but some log details will skew counts or lose data.
+The plan is sound, but some log details will skew counts or lose data.
 
-counting:
-- zmk_keymap_apply_position_state fires on press AND release, with no flag saying which. halve the counts, or treat each position's lines as alternating press/release
-- a &trans key logs once for its own layer, then "behavior processing to continue to next layer", then again for the layer below. drop any line followed by that "continue" line so the press counts only for the layer whose binding actually ran
-- no need to track set_layer_state. layer_id in each line is already the layer that handled the key
+Counting:
+- `zmk_keymap_apply_position_state` fires on press AND release, with no flag saying which. Halve the counts, or treat each position's lines as alternating press/release.
+- A `&trans` key logs once for its own layer, then `behavior processing to continue to next layer`, then again for the layer below. Drop any line followed by that "continue" line, so the press counts only for the layer whose binding actually ran.
+- No need to track `set_layer_state`. The `layer_id` in each line is already the layer that handled the key.
 
-data safety:
-- writing json only in a trap loses the whole session on a crash, ctrl-c or sleep. append matching raw lines to a per-session log as they arrive and build the json from that (at the end or any time). parsing bugs can then be fixed without losing data
-- fast typing can drop log lines ("--- N messages dropped ---"). watch for it, raise the log buffer size in corne.conf if it shows up
-- only logged while something is reading the port and the left half is on usb
+Data safety:
+- Writing the JSON only in a trap loses the whole session on a crash, Ctrl-C or sleep. Append matching raw lines to a per-session log as they arrive, and build the JSON from that (at the end or any time). Parsing bugs can then be fixed without losing data.
+- Fast typing can drop log lines (`--- N messages dropped ---`). Watch for it, and raise the log buffer size in `corne.conf` if it shows up.
+- Keys are only logged while something is reading the port and the left half is on USB.
 
-simplifications:
-- no sudo needed, read /dev/cu.usbmodem1101 (cu.* not tty.* on macos)
-- macos bash 3.2 has no dictionaries; awk or a small python script is easier for counting + json
-- add a label to the session filename, e.g. 2026-10-18T14-02_coding.json
+Simplifications:
+- No `sudo` needed. Read `/dev/cu.usbmodem1101` (use `cu.*`, not `tty.*`, on macOS).
+- macOS ships bash 3.2, which has no dictionaries. awk or a small Python script is easier for counting and writing JSON.
+- Add a label to the session filename, e.g. `2026-10-18T14-02_coding.json`.
 
-visualizing:
-- needs a position (0-41) -> x/y map of the corne. per-layer and overall heatmaps are just the same counts grouped differently
+Visualizing:
+- Needs a map from position (0-41) to x/y on the Corne. The per-layer and overall heatmaps are just the same counts grouped differently.
