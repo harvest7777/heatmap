@@ -67,3 +67,22 @@ Agree on:
 - No minimum data points.
 - Labels later. Layer names (Base, coding, math, controls) are easy to pull from `corne.keymap` when needed.
 - Hover counts per key: the precise answer to "is this really zero?"
+
+==============================
+
+Claude's response:
+
+Decisions so far:
+- Two modes with a toggle, default gradient. Gradient shows finger position ("where are my hands"); discrete per-key fill shows which keys are actually pressed ("what can I delete"). A zero key looking warm in gradient mode is fine, since that mode tracks finger position, not presses.
+- Gradient drawn without heatmap.js: a soft circle per key on a canvas, colored by intensity. About 40 lines of plain JS, no dependency.
+- Log scale for colors in both modes.
+- Tabs: Overall, then one per layer (0, 1, 2, 3 for now, names later). Layers with no data in the loaded files still show, as all-zero.
+- Data loaded with drag-and-drop or a file picker. Several sessions can be loaded at once and are summed in memory; no merged file is written.
+
+Loaded files list:
+- Show which files are in use, with a remove button per file and total presses per file so a near-empty session stands out.
+- Ignore a file dropped twice, so it isn't counted double.
+
+Credit for keymap-editor (nickcoutsos/keymap-editor, MIT):
+- Copying its styling counts as copying a substantial part, so MIT requires keeping its copyright notice and license text. Put them in a comment block at the top of the copied CSS (or a `LICENSE-keymap-editor` file).
+- Also credit the author visibly in the page footer, with a link to the repo.
