@@ -35,7 +35,15 @@ const PADDING = 5;
 const UNIT = SIZE + PADDING;
 const BASE_LAYERS = 4;
 
+// keymap-editor draws the halves one key further apart than ZMK's layout
+const RIGHT_HALF_SHIFT = 100;
+const RIGHT_HALF_FROM_X = 700;
+
 const keys = LAYOUT.map(([w, h, x, y, r, rx, ry], position) => {
+  if (x >= RIGHT_HALF_FROM_X) {
+    x += RIGHT_HALF_SHIFT;
+    if (r) rx += RIGHT_HALF_SHIFT;
+  }
   const u = w / 100, v = h / 100;
   const left = (x / 100) * UNIT;
   const top = (y / 100) * UNIT;
