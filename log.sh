@@ -21,11 +21,22 @@ name="$(date +%Y-%m-%dT%H-%M-%S)_${label//\//-}"
 out="$PWD/sessions/$name.json"
 tmp="$PWD/sessions/.$name.tmp.json"
 
-# Ask for the password before cu starts printing
-sudo -v || exit 1
+# cat, not cu: cu refuses to run with its output piped ("Can't set terminal
+# settings"), and cat needs no sudo or uucp lock files. Raw mode and no echo,
+# so the log isn't line-edited or echoed back to the keyboard.
+# One fd for both, so the settings can't reset between opens.
+exec 3<"$port" || exit 1
+stty raw -echo <&3 || exit 1
+echo "Connected."
+echo "Logging $(basename "$port") to $out"
 
-# Only cu's output goes to awk, which keeps counts and nothing else
-sudo cu -l "$port" | awk -f count.awk -v out="$out" -v tmp="$tmp" -v port="$(basename "$port")"
+# Ctrl-C ends only cat (handlers reset on exec, ignores don't), so awk still
+# reaches its end and saves, same as unplugging
+trap ':' INT
+cat <&3 | (trap '' INT; exec awk -f count.awk -v out="$out" -v tmp="$tmp")
+trap - INT
+exec 3<&-
+echo "Disconnected."
 
 if [ -s "$out" ]; then
   rm -f "$tmp"

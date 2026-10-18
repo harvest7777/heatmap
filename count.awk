@@ -3,7 +3,7 @@
 # Only counts are kept, never the order of presses, so nothing written can be
 # used to reconstruct what was typed. Nothing from the log is printed.
 #
-# Vars (-v): out = final JSON path, tmp = snapshot path, port = shown to the user
+# Vars (-v): out = final JSON path, tmp = snapshot path
 #
 # Each press logs zmk_keymap_apply_position_state once on press and once on
 # release, so counts are halved (floor) when written. A &trans key logs once
@@ -13,23 +13,9 @@ BEGIN {
     matches = 0
     max_layer = -1
     max_pos = -1
-    announced = 0
 }
 
 { sub(/\r$/, "") }
-
-# cu's own status lines, in case they arrive on stdout rather than stderr
-/^Connected\.$/ {
-    print > "/dev/stderr"
-    announce()
-    next
-}
-/^Disconnected\.$/ {
-    print > "/dev/stderr"
-    next
-}
-
-{ announce() }
 
 /zmk_keymap_apply_position_state: layer_id: [0-9]+ position: [0-9]+/ {
     s = $0
@@ -48,12 +34,6 @@ BEGIN {
 }
 
 END { write_json(out) }
-
-function announce() {
-    if (announced) return
-    announced = 1
-    printf "Logging %s to %s\n", port, out > "/dev/stderr"
-}
 
 function write_json(path,    l, p, n, first_layer, first_pos) {
     printf "{" > path
