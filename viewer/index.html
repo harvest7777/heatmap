@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corne Heatmap</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Corne heatmap</h1>
+      <div class="mode" role="group" aria-label="Display mode">
+        <button type="button" data-mode="gradient" aria-pressed="true">Gradient</button>
+        <button type="button" data-mode="keys" aria-pressed="false">Keys</button>
+      </div>
+    </header>
+
+    <nav class="layer-selector" aria-label="Layer">
+      <ul id="tabs" role="tablist"></ul>
+    </nav>
+
+    <section id="board-wrap" aria-label="Keyboard">
+      <div id="board">
+        <canvas id="heat"></canvas>
+        <div id="keys"></div>
+      </div>
+      <div id="tooltip" hidden></div>
+    </section>
+
+    <section id="drop" aria-label="Session files">
+      <p>Drop session JSON files here, or <label class="pick">choose files<input type="file" id="picker" accept=".json,application/json" multiple></label>. Several files are added together.</p>
+      <ul id="files"></ul>
+    </section>
+  </main>
+
+  <footer>
+    Keyboard styling and key layout math adapted from
+    <a href="https://github.com/nickcoutsos/keymap-editor">keymap-editor</a> by Nick Coutsos (MIT).
+    Corne physical layout from <a href="https://github.com/zmkfirmware/zmk">ZMK</a> (MIT).
+  </footer>
+
+  <script src="viewer.js"></script>
+</body>
+</html>
