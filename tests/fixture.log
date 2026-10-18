@@ -1,0 +1,20 @@
+Connected.
+[00:06:01.000,000] <dbg> zmk: zmk_physical_layouts_kscan_process_msgq: Row: 1, col: 1, position: 13, pressed: true
+[00:06:01.000,100] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 13, binding name: key_press
+[00:06:01.000,200] <dbg> zmk: on_keymap_binding_pressed: position 13 keycode 0x04
+[00:06:01.000,300] <dbg> zmk: hid_listener_keycode_pressed: usage_page 0x07 keycode 0x04 implicit_mods 0x00 explicit_mods 0x00
+[00:06:01.100,100] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 13, binding name: key_press
+[00:06:01.100,200] <dbg> zmk: on_keymap_binding_released: position 13 keycode 0x04
+[00:06:02.000,100] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 13, binding name: key_press
+[00:06:02.100,100] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 13, binding name: key_press
+[00:06:03.000,000] <dbg> zmk: mo_keymap_binding_pressed: position 38 layer 3
+[00:06:03.000,100] <dbg> zmk: set_layer_state: layer_changed: layer 3 state 1
+[00:06:03.200,351] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 3 position: 2, binding name: transparent
+[00:06:03.200,381] <dbg> zmk: zmk_keymap_position_state_changed: behavior processing to continue to next layer
+[00:06:03.200,442] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 2, binding name: key_press
+[00:06:03.300,351] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 3 position: 2, binding name: transparent
+[00:06:03.300,381] <dbg> zmk: zmk_keymap_position_state_changed: behavior processing to continue to next layer
+[00:06:03.300,442] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 2, binding name: key_press
+[00:06:03.400,000] <dbg> zmk: set_layer_state: layer_changed: layer 3 state 0
+[00:06:04.000,000] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 5, binding name: key_press
+Disconnected.
