@@ -64,18 +64,51 @@ The plan is sound, but some log details will skew counts or lose data.
 
 Counting:
 - `zmk_keymap_apply_position_state` fires on press AND release, with no flag saying which. Halve the counts, or treat each position's lines as alternating press/release.
+        - is this actually correct???
+        - yes, this is correct actually. we can just halve the counts
+
+
 - A `&trans` key logs once for its own layer, then `behavior processing to continue to next layer`, then again for the layer below. Drop any line followed by that "continue" line, so the press counts only for the layer whose binding actually ran.
+    - i should think about this. do i really want to log &trans? 
+    - id say yes. if im on a layer, then press a trans, it should count as a keypress towards the layer that im on. this is respectful of answering the qustion "which keys do i actually physically press per layer?"
+
+    - it looks like this
+[01:18:18.722,351] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 3 position: 2, binding name: transparent
+[01:18:18.722,381] <dbg> zmk: zmk_keymap_position_state_changed: behavior processing to continue to next layer
+[01:18:18.722,442] <dbg> zmk: zmk_keymap_apply_position_state: layer_id: 0 position: 2, binding name: key_press
+    - claude is correct. we should ignore the continue.
+    - i think a good way to do this is to just hade a state like IS_CONTINUING that becomes true when we see the continue to next layer words, then we ignore the next pair of key press release event and set IS_CONTINUING back to false?
+
+    - this is kind of fighting against the way that zmk will stack keys and layers though. i think that the double count is actually fine now that i think about it.
+    - **my final verdict here** just double count it. in this example just log for both layer 3 pos 2 and layer 0 pos 2. its respective of both. i dont care to answer the question "which layer was i coming from when pressing this key?" so double counting is fine.
+    
+
 - No need to track `set_layer_state`. The `layer_id` in each line is already the layer that handled the key.
+    - correct. that was my bad.
 
 Data safety:
 - Writing the JSON only in a trap loses the whole session on a crash, Ctrl-C or sleep. Append matching raw lines to a per-session log as they arrive, and build the JSON from that (at the end or any time). Parsing bugs can then be fixed without losing data.
+    - no. i do not want to produce anything that can end up being reversed to figurn out what people have typed.
+    - i think i misspoke, trap is not the right word here btu what i care about is once we see "Disconnected" we write.
+    - every few seconds we can write what we have in memory to a temp-date.json then just delete it on a successful write.
 - Fast typing can drop log lines (`--- N messages dropped ---`). Watch for it, and raise the log buffer size in `corne.conf` if it shows up.
+    -  was not able to recreate at near 200 wpm its fine.
 - Keys are only logged while something is reading the port and the left half is on USB.
+    - im aware. that is fine. this is not meant to be permanently running
 
 Simplifications:
 - No `sudo` needed. Read `/dev/cu.usbmodem1101` (use `cu.*`, not `tty.*`, on macOS).
+    - this is incorrect. just use the sudo.
+    - ᓚ₍⑅^..^₎ꨄ︎  ry /dev ✔≻ cu -l /dev/cu.usbmodem1101
+cu: creat during lock (/var/spool/uucp/TMP00000087a9 in /dev as uid 501): Permission denied
+cu: /dev/cu.usbmodem1101: Line in use
+
+
 - macOS ships bash 3.2, which has no dictionaries. awk or a small Python script is easier for counting and writing JSON.
+    - agreed on awk. dont want dependency on python.
 - Add a label to the session filename, e.g. `2026-10-18T14-02_coding.json`.
+    - correct.
 
 Visualizing:
 - Needs a map from position (0-41) to x/y on the Corne. The per-layer and overall heatmaps are just the same counts grouped differently.
+    - we will do this later.
