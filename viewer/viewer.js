@@ -190,41 +190,13 @@ function drawGradient(counts) {
   ctx.putImageData(img, 0, 0);
 }
 
-// Matches the 200ms fade keys get in Keys mode: the old glow is copied to a
-// second canvas on top and faded out while the new one is drawn underneath.
-// Coming from Keys mode (canvas hidden), the new glow fades in instead.
-function showGradient(counts) {
-  const prev = $('heat-prev');
-  const fresh = canvas.hidden;
-  if (!fresh) {
-    prev.width = canvas.width;
-    prev.height = canvas.height;
-    prev.style.width = canvas.style.width;
-    prev.style.height = canvas.style.height;
-    prev.getContext('2d').drawImage(canvas, 0, 0);
-  }
-  prev.hidden = fresh;
-  for (const [el, from] of [[prev, '1'], [canvas, fresh ? '0' : '1']]) {
-    el.style.transition = 'none';
-    el.style.opacity = from;
-  }
-  canvas.hidden = false;
-  drawGradient(counts);
-  // Two frames, so the starting opacity is painted before the transition runs
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    for (const el of [prev, canvas]) el.style.transition = '';
-    prev.style.opacity = '0';
-    canvas.style.opacity = '1';
-  }));
-}
-
 function render() {
   const counts = countsForView();
   const t = scale(counts);
 
   board.className = state.mode;
-  if (state.mode === 'gradient') showGradient(counts);
-  else canvas.hidden = $('heat-prev').hidden = true;
+  canvas.hidden = state.mode !== 'gradient';
+  if (state.mode === 'gradient') drawGradient(counts);
 
   for (const el of $('keys').children) {
     const n = counts[el.dataset.position];

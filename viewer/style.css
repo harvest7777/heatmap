@@ -182,7 +182,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   font-size: 14px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 150ms;
 }
 
 /* No sessions yet: a greyed-out board that can't be used, and the hint on hover
@@ -195,9 +194,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   #board-wrap.is-empty .empty { opacity: 1; }
 }
 #board-wrap:not(.is-empty) .empty { display: none; }
-@media (prefers-reduced-motion: reduce) {
-  .empty { transition: none; }
-}
 
 /* Scaled down by viewer.js to fit narrow screens */
 #board {
@@ -205,16 +201,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   transform-origin: 0 0;
 }
 
-#heat,
-#heat-prev {
+#heat {
   position: absolute;
   left: 0;
   top: 0;
   pointer-events: none;
-  transition: opacity 200ms;
-}
-@media (prefers-reduced-motion: reduce) {
-  #heat, #heat-prev, .key { transition: none; }
 }
 
 /* Keys, after keymap-editor's .key */
@@ -227,7 +218,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background-color: var(--key);
   border-radius: 5px;
   font-size: 12px;
-  transition: background-color 200ms;
 }
 .key:hover { z-index: 1; outline: 2px solid var(--accent); }
 
@@ -298,7 +288,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   border-radius: 10px;
   background: var(--surface);
   min-width: 0;
-  transition: border-color 150ms, background-color 150ms;
 }
 .zone.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
 .zone-body { min-width: 0; }
