@@ -21,37 +21,12 @@ This is necessary to count which keys are being pressed. The raw keypress data N
 
 ### Usage
 
-1. Set ```CONFIG_ZMK_LOG_LEVEL_DBG=y``` in your ```config/corne.conf```
-2. Set the ```zmk-usb-logging``` snippet in your build script. I build locally instead of using GitHub actions, this is my whole script:
-```
-#!/usr/bin/env bash
-# Build ZMK firmware locally in Docker. Output: ./firmware/*.uf2
-set -euo pipefail
-cd "$(dirname "$0")"
-
-docker run --rm -v "$PWD":/config -v zmk-ws:/ws -w /ws zmkfirmware/zmk-build-arm:3.5 bash -c '
-  set -e
-  if [ ! -d .west ]; then
-    mkdir -p config && cp /config/config/west.yml config/
-    west init -l config && west update
-  fi
-  # The CMake package registry it writes lives outside the volume, so redo it
-  # every run or a pristine build cannot find Zephyr
-  west zephyr-export
-  # Pristine (-p always): a reused build dir keeps its old snippets even when
-  # -S changes
-  west build -p always -s zmk/app -d build/left -b nice_nano_v2 -S zmk-usb-logging -- -DSHIELD=corne_left -DZMK_CONFIG=/config/config
-  west build -p always -s zmk/app -d build/right -b nice_nano_v2 -- -DSHIELD=corne_right -DZMK_CONFIG=/config/config
-  mkdir -p /config/firmware
-  cp build/left/zephyr/zmk.uf2 /config/firmware/corne_left.uf2
-  cp build/right/zephyr/zmk.uf2 /config/firmware/corne_right.uf2
-'
-```
-3. Flash the keyboard. Note that you shouldn't run this permanently since it drains more battery life. Flash a non-logging build after you're happy with the amount of data collected.
-4. Plug in with USB C and find the port ```ls /dev/cu.usbmodem*```
-5. Start the logger ```./log.sh /dev/cu.usbmodem(your port) (your session name)```
-6. Stop logging by unplugging the USB C or CTRL C. The json file is saved automatically.
-7. Repeat as many times as you need, then upload the jsons and optionally your keymap file to the visualizer. 
+1. Enable logging on your keyboard https://zmk.dev/docs/development/usb-logging
+2. Flash the keyboard. Note that you shouldn't run this permanently since it drains more battery life. Flash a non-logging build after you're happy with the amount of data collected.
+3. Plug in with USB C and find the port ```ls /dev/cu.usbmodem*```
+4. Start the logger ```./log.sh /dev/cu.usbmodem(your port) (your session name)```
+5. Stop logging by unplugging the USB C or CTRL C. The json file is saved automatically.
+6. Repeat as many times as you need, then upload the jsons and optionally your keymap file to the visualizer. 
 
 ---
 
