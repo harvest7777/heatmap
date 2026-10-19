@@ -209,6 +209,8 @@ function render() {
 
   const max = Math.max(0, ...counts);
   $('legend-max').textContent = `${max.toLocaleString()} ${max === 1 ? 'press' : 'presses'}`;
+  renderSummary();
+  $('empty').hidden = state.files.size > 0;
 
   renderTabs();
   renderFiles();
@@ -323,7 +325,7 @@ function keycodeLabel(code) {
 function bindingLabel({ behavior, params }) {
   switch (behavior) {
     case 'trans':
-      return { tag: '', text: '▽' };
+      return { tag: '', text: '·', trans: true };
     case 'none':
       return { tag: '', text: '' };
     case 'kp':
@@ -419,10 +421,11 @@ function renderLabel(el, label) {
     text.innerHTML = ICON_SVGS[label.icon]; // static SVG from icons.js
   } else {
     text.textContent = label.text;
-    if (label.text.length > 3) text.dataset.long = 'true';
+    if (label.trans) text.dataset.trans = 'true';
+    else if (label.text.length > 3) text.dataset.long = 'true';
   }
   el.append(text);
-  el.dataset.binding = [label.tag, label.text].filter(Boolean).join(' ');
+  el.dataset.binding = label.trans ? 'transparent' : [label.tag, label.text].filter(Boolean).join(' ');
 }
 
 function renderKeymap() {
@@ -471,11 +474,21 @@ async function addKeymap(fileList) {
   render();
 }
 
+function renderSummary() {
+  let total = 0;
+  for (const f of state.files.values()) total += f.total;
+  const n = state.files.size;
+  $('summary').textContent = n
+    ? `${total.toLocaleString()} presses from ${n} ${n === 1 ? 'session' : 'sessions'}`
+    : 'No sessions loaded';
+}
+
 // Shrink the board to fit narrow screens
 function fit() {
   const available = $('board-wrap').clientWidth;
   const s = Math.min(1, available / boardWidth);
-  board.style.transform = `scale(${s})`;
+  // The transform doesn't shrink the layout box, so center by hand
+  board.style.transform = `translateX(${(available - boardWidth * s) / 2}px) scale(${s})`;
   $('board-wrap').style.height = `${boardHeight * s}px`;
 }
 

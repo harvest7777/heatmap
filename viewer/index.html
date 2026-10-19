@@ -9,34 +9,35 @@
 <body>
   <main>
     <header>
-      <h1>Corne heatmap</h1>
+      <div class="title">
+        <h1>Corne heatmap</h1>
+        <p id="summary" class="summary"></p>
+      </div>
+      <div class="mode" role="group" aria-label="Display mode">
+        <button type="button" data-mode="gradient" aria-pressed="true">Gradient</button>
+        <button type="button" data-mode="keys" aria-pressed="false">Keys</button>
+      </div>
     </header>
 
     <div class="controls">
       <nav class="layer-selector" aria-label="Layer">
         <ul id="tabs" role="tablist"></ul>
       </nav>
-      <div class="mode" role="group" aria-label="Display mode">
-        <button type="button" data-mode="gradient" aria-pressed="true">Gradient</button>
-        <button type="button" data-mode="keys" aria-pressed="false">Keys</button>
+      <div id="legend" class="legend" aria-label="Color legend">
+        <span>0</span>
+        <div id="legend-bar"></div>
+        <span id="legend-max" class="legend-max"></span>
       </div>
     </div>
 
-    <div class="viz">
-      <section id="board-wrap" aria-label="Keyboard">
-        <div id="board">
-          <canvas id="heat"></canvas>
-          <div id="keys"></div>
-        </div>
-        <div id="tooltip" hidden></div>
-      </section>
-
-      <aside id="legend" aria-label="Color legend">
-        <span id="legend-max" class="end"></span>
-        <div id="legend-bar"></div>
-        <span class="end">0 presses</span>
-      </aside>
-    </div>
+    <section id="board-wrap" aria-label="Keyboard">
+      <div id="board">
+        <canvas id="heat"></canvas>
+        <div id="keys"></div>
+      </div>
+      <p id="empty" class="empty">Drop a session file into Sessions below to see where your hands spend their time.</p>
+      <div id="tooltip" hidden></div>
+    </section>
 
     <div class="inputs">
       <section id="drop" class="zone" aria-label="Session files">

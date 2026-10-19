@@ -25,8 +25,8 @@
  * SOFTWARE.
  */
 
-/* Layout: tabs and mode toggle on one row, board with the legend beside it,
-   file inputs as a quieter second section below */
+/* Layout: title and summary with the mode switch, then layer tabs with the
+   legend, then the board at full width, then the file inputs */
 :root {
   --text: #2b2d31;
   --muted: #7a7d85;
@@ -57,6 +57,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -74,6 +75,20 @@ footer {
 }
 main { padding-block: 32px 0; }
 
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.summary {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
 h1 {
   font-size: 26px;
   font-weight: 650;
@@ -87,7 +102,7 @@ h1 {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px 24px;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 /* Layer tabs, after keymap-editor's layer selector */
@@ -138,56 +153,41 @@ h1 {
 
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.viz {
-  display: flex;
-  align-items: stretch;
-  gap: 24px;
+#board-wrap {
+  position: relative;
   margin-top: 20px;
 }
 
-#board-wrap {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  /* The board is shrunk with a transform, which doesn't shrink its layout box;
-     fit() sets the height, so don't let flexbox stretch it back */
-  min-height: 0;
-}
-
-#legend {
+/* Fixed-size pieces, so nothing moves when the count changes between tabs */
+.legend {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
-  flex: none;
-  padding-block: 28px;
   color: var(--muted);
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
-#legend .end { white-space: nowrap; font-variant-numeric: tabular-nums; }
 #legend-bar {
-  flex: 1;
-  width: 12px;
-  min-height: 80px;
-  border-radius: 6px;
-  background: linear-gradient(to top, var(--legend-stops));
+  width: 160px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right, var(--legend-stops));
 }
+/* Room for "999,999 presses", so the bar keeps its place as the count changes */
+.legend-max { min-width: 15ch; }
 
-/* Narrow screens: the legend moves under the board so the board keeps the width */
-@media (max-width: 1100px) {
-  .viz { flex-direction: column; gap: 8px; }
-  #board-wrap { flex: none; }
-  #legend { flex-direction: row; padding-block: 0; }
-  #legend .end:last-child { order: -1; }
-  #legend .end:first-child { order: 1; }
-  #legend-bar {
-    width: auto;
-    height: 10px;
-    min-height: 0;
-    flex: 1;
-    max-width: 320px;
-    background: linear-gradient(to right, var(--legend-stops));
-  }
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
 }
 
 /* Scaled down by viewer.js to fit narrow screens */
@@ -226,6 +226,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   font-size: 18px;
 }
 .key .label[data-long="true"] { font-size: 11px; }
+.key .label[data-trans="true"] { font-size: 14px; opacity: 0.5; }
 .key .label svg { display: block; height: 18px; width: auto; }
 .key .tag {
   position: absolute;
