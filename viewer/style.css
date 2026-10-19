@@ -282,10 +282,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   margin-top: 48px;
 }
 .zone {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 14px;
   padding: 16px 18px;
   border: 1.5px dashed var(--zero-edge);
   border-radius: 10px;
@@ -294,9 +290,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 .zone.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
 .zone-body { min-width: 0; }
-.drop-icon { color: var(--muted); padding-top: 2px; }
-.drop-icon svg { display: block; width: 22px; height: 26px; }
-.zone.over .drop-icon { color: var(--accent); }
 .zone h2 {
   font-size: 12px;
   font-weight: 600;
@@ -313,7 +306,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .file-list { list-style: none; margin: 8px 0 0; padding: 0; }
 /* Many sessions can be loaded at once; show about five and scroll the rest */
-#files { max-height: 170px; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+#files { max-height: 170px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: 8px; }
 .file-list li {
   display: flex;
   align-items: center;
