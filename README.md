@@ -55,14 +55,14 @@ docker run --rm -v "$PWD":/config -v zmk-ws:/ws -w /ws zmkfirmware/zmk-build-arm
 
 ---
 
-**AI usage**
+### AI usage
 
 
 Claude Opus 5.5 was used for the implementation. The design and requirements were human designed and reviewed. Unfiltered human design and Claude responses are in the commit history and markdown files. This README.md is entirely human written. 
 
 ---
 
-**Credits**
+### Credits
 
 - Website UI and Corne styling: https://github.com/nickcoutsos/keymap-editor
 - Physical Corne layout and keycode names: https://github.com/zmkfirmware/zmk
