@@ -25,26 +25,34 @@
  * SOFTWARE.
  */
 
+/* Layout: tabs and mode toggle on one row, board with the legend beside it,
+   file inputs as a quieter second section below */
 :root {
-  --text: #333;
-  --muted: #999;
+  --text: #2b2d31;
+  --muted: #7a7d85;
   --page: #fff;
   --key: whitesmoke;
+  --surface: #f6f6f7;
+  --line: rgba(120, 124, 132, 0.22);
+  --zero-edge: #c4c6cb;
   --accent: rgb(60, 179, 113);
-  --tab: rgba(201, 201, 201, 0.85);
-  --tab-text: darkgray;
-  --zero-edge: #c9c9c9;
+  --tab: #ececee;
+  --tab-text: #5d6068;
+  --halo: rgba(255, 255, 255, 0.85);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #ddd;
-    --muted: #888;
+    --text: #e2e3e6;
+    --muted: #8d9098;
     --page: #1b1b1d;
     --key: #2c2c30;
-    --tab: rgba(80, 80, 86, 0.85);
-    --tab-text: #aaa;
-    --zero-edge: #55555c;
+    --surface: #232326;
+    --line: rgba(160, 164, 172, 0.2);
+    --zero-edge: #55575e;
+    --tab: #2e2e33;
+    --tab-text: #b4b6bc;
+    --halo: rgba(27, 27, 29, 0.85);
   }
 }
 
@@ -54,43 +62,41 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--text);
-  font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-main {
-  max-width: 1100px;
+main,
+footer {
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+main { padding-block: 32px 0; }
+
+h1 {
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-header {
+.controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 20px;
 }
-
-h1 { font-size: 20px; margin: 0; }
-
-.mode button {
-  border: none;
-  border-radius: 15px;
-  height: 30px;
-  padding: 0 14px;
-  background: var(--tab);
-  color: var(--tab-text);
-  cursor: pointer;
-  font: inherit;
-}
-.mode button[aria-pressed="true"] { background: var(--accent); color: white; }
 
 /* Layer tabs, after keymap-editor's layer selector */
 .layer-selector ul {
   display: flex;
   flex-wrap: wrap;
+  gap: 6px;
   list-style-type: none;
-  margin: 16px 0;
+  margin: 0;
   padding: 0;
 }
 .layer-selector li button {
@@ -102,44 +108,86 @@ h1 { font-size: 20px; margin: 0; }
   height: 30px;
   line-height: 30px;
   padding: 0 14px;
-  margin: 4px 2px;
   font: inherit;
-  font-variant: small-caps;
+  font-size: 14px;
 }
 /* Overall isn't a layer, so it sits apart at the end */
-.layer-selector li.overall { margin-left: 16px; }
+.layer-selector li.overall { margin-left: 18px; }
 .layer-selector li button:hover { background-color: rgba(60, 179, 113, 0.85); color: white; }
 .layer-selector li button[aria-selected="true"] { background-color: var(--accent); color: white; }
+
+/* Display mode: a segmented control, so it doesn't read as more tabs */
+.mode {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 2px;
+}
+.mode button {
+  border: none;
+  border-radius: 6px;
+  height: 28px;
+  padding: 0 12px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+}
+.mode button[aria-pressed="true"] { background: var(--tab); color: var(--text); }
+
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .viz {
   display: flex;
   align-items: stretch;
-  gap: 16px;
+  gap: 24px;
+  margin-top: 20px;
 }
 
 #board-wrap {
   position: relative;
   flex: 1;
   min-width: 0;
+  /* The board is shrunk with a transform, which doesn't shrink its layout box;
+     fit() sets the height, so don't let flexbox stretch it back */
+  min-height: 0;
 }
 
 #legend {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 64px;
+  gap: 8px;
   flex: none;
+  padding-block: 28px;
   color: var(--muted);
   font-size: 12px;
-  text-align: center;
 }
-#legend .end { line-height: 1.2; font-variant-numeric: tabular-nums; }
+#legend .end { white-space: nowrap; font-variant-numeric: tabular-nums; }
 #legend-bar {
   flex: 1;
-  width: 14px;
+  width: 12px;
   min-height: 80px;
-  border-radius: 7px;
+  border-radius: 6px;
+  background: linear-gradient(to top, var(--legend-stops));
+}
+
+/* Narrow screens: the legend moves under the board so the board keeps the width */
+@media (max-width: 1100px) {
+  .viz { flex-direction: column; gap: 8px; }
+  #board-wrap { flex: none; }
+  #legend { flex-direction: row; padding-block: 0; }
+  #legend .end:last-child { order: -1; }
+  #legend .end:first-child { order: 1; }
+  #legend-bar {
+    width: auto;
+    height: 10px;
+    min-height: 0;
+    flex: 1;
+    max-width: 320px;
+    background: linear-gradient(to right, var(--legend-stops));
+  }
 }
 
 /* Scaled down by viewer.js to fit narrow screens */
@@ -183,18 +231,22 @@ h1 { font-size: 20px; margin: 0; }
   position: absolute;
   top: 0;
   left: 0;
-  padding: 2px 3px;
-  font-size: 10px;
-  font-variant: small-caps;
-  opacity: 0.6;
+  padding: 2px 4px;
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.55;
 }
 .keys .key:not(.zero) { color: rgba(0, 0, 0, 0.7); }
 
-/* Gradient mode: keys become outlines over the canvas */
+/* Gradient mode: faint outlines over the canvas, labels with a halo so they
+   stay readable on hot keys */
 .gradient .key {
   background-color: transparent;
-  border: 1px solid rgba(128, 128, 128, 0.45);
+  border: 1px solid var(--line);
+  color: var(--text);
 }
+.gradient .key .label { text-shadow: 0 0 3px var(--halo), 0 0 6px var(--halo); }
 
 /* Keys mode: never-pressed keys are hollow so "unused" is unmistakable */
 .keys .key.zero {
@@ -214,16 +266,31 @@ h1 { font-size: 20px; margin: 0; }
   white-space: nowrap;
 }
 
+/* File inputs: a quieter second section, side by side when there's room */
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
 .zone {
-  margin-top: 24px;
-  padding: 16px;
-  border: 2px dashed var(--zero-edge);
-  border-radius: 8px;
+  padding: 16px 18px;
+  border: 1px dashed transparent;
+  border-radius: 10px;
+  background: var(--surface);
+  min-width: 0;
 }
 .zone.over { border-color: var(--accent); }
-.zone h2 { font-size: 15px; margin: 0 0 4px; }
-.zone .optional { color: var(--muted); font-weight: normal; font-size: 13px; }
-.zone p { margin: 0; color: var(--muted); }
+.zone h2 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.zone .optional { font-weight: normal; letter-spacing: 0; text-transform: none; }
+.zone p { margin: 0; color: var(--muted); font-size: 14px; }
 
 .pick { color: var(--accent); cursor: pointer; text-decoration: underline; }
 .pick input { display: none; }
@@ -235,8 +302,8 @@ h1 { font-size: 20px; margin: 0; }
   gap: 8px;
   padding: 4px 0;
 }
-.file-list .name { overflow-wrap: anywhere; }
-.file-list .total { color: var(--muted); margin-left: auto; white-space: nowrap; }
+.file-list .name { overflow-wrap: anywhere; min-width: 0; }
+.file-list .total { color: var(--muted); margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .file-list button {
   border: none;
   background: none;
@@ -247,11 +314,14 @@ h1 { font-size: 20px; margin: 0; }
 .file-list button:hover { color: crimson; }
 .file-list .warning { color: #c77c00; font-size: 13px; }
 
-footer {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 8px 16px 24px;
+footer { padding-block: 40px 32px; }
+.credits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 footer a { color: inherit; }

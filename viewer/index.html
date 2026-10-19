@@ -10,15 +10,17 @@
   <main>
     <header>
       <h1>Corne heatmap</h1>
+    </header>
+
+    <div class="controls">
+      <nav class="layer-selector" aria-label="Layer">
+        <ul id="tabs" role="tablist"></ul>
+      </nav>
       <div class="mode" role="group" aria-label="Display mode">
         <button type="button" data-mode="gradient" aria-pressed="true">Gradient</button>
         <button type="button" data-mode="keys" aria-pressed="false">Keys</button>
       </div>
-    </header>
-
-    <nav class="layer-selector" aria-label="Layer">
-      <ul id="tabs" role="tablist"></ul>
-    </nav>
+    </div>
 
     <div class="viz">
       <section id="board-wrap" aria-label="Keyboard">
@@ -36,25 +38,27 @@
       </aside>
     </div>
 
-    <section id="drop" class="zone" aria-label="Session files">
-      <h2>Sessions</h2>
-      <p>Drop session <code>.json</code> files here, or <label class="pick">choose files<input type="file" id="picker" accept=".json" multiple></label>. Several files are added together.</p>
-      <ul id="files" class="file-list"></ul>
-    </section>
+    <div class="inputs">
+      <section id="drop" class="zone" aria-label="Session files">
+        <h2>Sessions</h2>
+        <p>Drop session <code>.json</code> files here, or <label class="pick">choose files<input type="file" id="picker" accept=".json" multiple></label>. Several files are added together.</p>
+        <ul id="files" class="file-list"></ul>
+      </section>
 
-    <section id="keymap-drop" class="zone" aria-label="Keymap file">
-      <h2>Keymap <span class="optional">optional</span></h2>
-      <p>Drop your ZMK <code>.keymap</code> here, or <label class="pick">choose a file<input type="file" id="keymap-picker" accept=".keymap"></label>, to label the keys on each layer.</p>
-      <ul id="keymap-files" class="file-list"></ul>
-    </section>
+      <section id="keymap-drop" class="zone" aria-label="Keymap file">
+        <h2>Keymap <span class="optional">optional</span></h2>
+        <p>Drop your ZMK <code>.keymap</code> here, or <label class="pick">choose a file<input type="file" id="keymap-picker" accept=".keymap"></label>, to label the keys on each layer.</p>
+        <ul id="keymap-files" class="file-list"></ul>
+      </section>
+    </div>
   </main>
 
   <footer>
-    Keyboard styling and key layout math adapted from
-    <a href="https://github.com/nickcoutsos/keymap-editor">keymap-editor</a> by Nick Coutsos (MIT).
-    Corne physical layout and keycode data from <a href="https://github.com/zmkfirmware/zmk">ZMK</a> (MIT),
-    keycode table as shipped by keymap-editor.
-    Key icons from <a href="https://fontawesome.com">Font Awesome Free</a> (CC BY 4.0).
+    <ul class="credits">
+      <li>Keyboard styling and key layout math adapted from <a href="https://github.com/nickcoutsos/keymap-editor">keymap-editor</a> by Nick Coutsos (MIT).</li>
+      <li>Corne physical layout and keycode data from <a href="https://github.com/zmkfirmware/zmk">ZMK</a> (MIT), keycode table as shipped by keymap-editor.</li>
+      <li>Key icons from <a href="https://fontawesome.com">Font Awesome Free</a> (CC BY 4.0).</li>
+    </ul>
   </footer>
 
   <script src="keycodes.js"></script>

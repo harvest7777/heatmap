@@ -64,10 +64,12 @@ const keys = LAYOUT.map(([w, h, x, y, r, rx, ry], position) => {
 });
 
 const allCorners = keys.flatMap((k) => k.corners);
-const minX = Math.min(...allCorners.map((c) => c[0]));
-const minY = Math.min(...allCorners.map((c) => c[1]));
-const boardWidth = Math.ceil(Math.max(...allCorners.map((c) => c[0])) - minX);
-const boardHeight = Math.ceil(Math.max(...allCorners.map((c) => c[1])) - minY);
+// Room around the keys so glows on the outer keys aren't cut off at the canvas edge
+const GLOW_PAD = 28;
+const minX = Math.min(...allCorners.map((c) => c[0])) - GLOW_PAD;
+const minY = Math.min(...allCorners.map((c) => c[1])) - GLOW_PAD;
+const boardWidth = Math.ceil(Math.max(...allCorners.map((c) => c[0])) - minX + GLOW_PAD);
+const boardHeight = Math.ceil(Math.max(...allCorners.map((c) => c[1])) - minY + GLOW_PAD);
 
 const state = {
   files: new Map(), // name -> { counts: { layer: { position: n } }, total }
@@ -534,7 +536,8 @@ $('keymap-picker').addEventListener('change', (e) => {
   addKeymap(e.target.files);
   e.target.value = '';
 });
-$('legend-bar').style.background = `linear-gradient(to top, ${PALETTE_STOPS.map(([at, c]) => `${c} ${at * 100}%`).join(', ')})`;
+// style.css picks the direction: up beside the board, sideways under it
+document.documentElement.style.setProperty('--legend-stops', PALETTE_STOPS.map(([at, c]) => `${c} ${at * 100}%`).join(', '));
 window.addEventListener('resize', fit);
 
 buildKeys();
