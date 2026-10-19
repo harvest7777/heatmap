@@ -589,7 +589,7 @@ const KEYCODE_LABELS = {
 "STAR": "*",
 "SYSREQ": "SYSREQ",
 "T": "T",
-"TAB": "TAB",
+"TAB": "tab",
 "TILDE": "~",
 "TILDE2": "~",
 "U": "U",
@@ -623,6 +623,5 @@ const KEYCODE_ICONS = {
 "C_VOLUME_UP": "volume-high",
 "C_VOL_DN": "volume-low",
 "C_VOL_UP": "volume-high",
-"K_MUTE": "volume-xmark",
-"TAB": "arrow-right-to-bracket"
+"K_MUTE": "volume-xmark"
 };
