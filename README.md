@@ -1,10 +1,6 @@
-### !!THIS WILL LITERALLY LISTEN TO YOUR KEYSTROKES!!
+<img width="2950" height="1700" alt="_Users_ryantran_Developer_logger_viewer_index html (1)" src="https://github.com/user-attachments/assets/fbdd2c8a-5893-47ac-b0a3-9aefeff95861" />
 
-This is necessary to count which keys are being pressed. The raw keypress data NEVER leaves your machine and this does NOT require an internet connection to use. The order of keypresses are NEVER stored so it is not possible to reverse what you typed. Although the site is hosted on https://harvest7777.github.io/heatmap/viewer for free use and I do NOT save or send the non-sensitive count and keymap data anywhere else, you can just clone the repo and open the html file locally.
-
----
-
-### Usage
+<img width="2950" height="1700" alt="_Users_ryantran_Developer_logger_viewer_index html" src="https://github.com/user-attachments/assets/5bc00135-96ac-42f6-aa20-32bb33209e6c" />
 
 This project gathers and visualizes the keypress heatmap for ZMK-firmware Corne keyboards. It works by parsing the debug data from ZMK, then visualizes with HTML. It supports both gradient and discrete heatmaps. 
 
@@ -16,11 +12,14 @@ I made this because when rebinding keys, I often assume keys are useless when th
 
 I am also learning [colemakdh](https://colemakmods.github.io/mod-dh/) and want to gauge how ergonomic it is on a columnstaggered, heavily layered, split keyboard.
 
-<img width="2950" height="1700" alt="_Users_ryantran_Developer_logger_viewer_index html (1)" src="https://github.com/user-attachments/assets/fbdd2c8a-5893-47ac-b0a3-9aefeff95861" />
+Please note that **this uses ZMK debug, which literally streams your keystrokes!!!** This project runs entirely locally, but please read the code and understand the risks if you are concerned about security.
+
+This is necessary to count which keys are being pressed. The raw keypress data NEVER leaves your machine and this does NOT require an internet connection to use. The order of keypresses are NEVER stored so it is not possible to reverse what you typed. Although the site is hosted on https://harvest7777.github.io/heatmap/viewer for free use and I do NOT save or send the non-sensitive count and keymap data anywhere else, you can just clone the repo and open the html file locally.
 
 
-<img width="2950" height="1700" alt="_Users_ryantran_Developer_logger_viewer_index html" src="https://github.com/user-attachments/assets/5bc00135-96ac-42f6-aa20-32bb33209e6c" />
+---
 
+### Usage
 
 1. Set ```CONFIG_ZMK_LOG_LEVEL_DBG=y``` in your ```config/corne.conf```
 2. Set the ```zmk-usb-logging``` snippet in your build script. I build locally instead of using GitHub actions, this is my whole script:
