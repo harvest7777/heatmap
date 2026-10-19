@@ -49,7 +49,7 @@ docker run --rm -v "$PWD":/config -v zmk-ws:/ws -w /ws zmkfirmware/zmk-build-arm
 ```
 3. Flash the keyboard. Note that you shouldn't run this permanently since it drains more battery life. Flash a non-logging build after you're happy with the amount of data collected.
 4. Plug in with USB C and find the port ```ls /dev/cu.usbmodem*```
-5. Start the logger ```./log.sh /dev/cu.usbmodem1101 coding```
+5. Start the logger ```./log.sh /dev/cu.usbmodem(your port) (your session name)```
 6. Stop logging by unplugging the USB C or CTRL C. The json file is saved automatically.
 7. Repeat as many times as you need, then upload the jsons and optionally your keymap file to the visualizer. 
 
