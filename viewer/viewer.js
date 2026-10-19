@@ -205,7 +205,8 @@ function render() {
     renderLabel(el, labelsForView()?.[el.dataset.position]);
   }
 
-  $('legend-max').textContent = Math.max(0, ...counts) ? Math.max(...counts).toLocaleString() : '';
+  const max = Math.max(0, ...counts);
+  $('legend-max').textContent = `${max.toLocaleString()} ${max === 1 ? 'press' : 'presses'}`;
 
   renderTabs();
   renderFiles();

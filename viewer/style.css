@@ -134,8 +134,7 @@ h1 { font-size: 20px; margin: 0; }
   font-size: 12px;
   text-align: center;
 }
-#legend .end { line-height: 1.2; }
-#legend .count { display: block; font-variant-numeric: tabular-nums; }
+#legend .end { line-height: 1.2; font-variant-numeric: tabular-nums; }
 #legend-bar {
   flex: 1;
   width: 14px;
