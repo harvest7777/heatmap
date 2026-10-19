@@ -58,10 +58,8 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-button { text-transform: inherit; }
 
 body {
-  text-transform: lowercase;
   margin: 0;
   background: var(--page);
   color: var(--text);
@@ -244,7 +242,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   padding: 2px 4px;
   font-size: 9px;
   letter-spacing: 0.03em;
-  text-transform: lowercase;
+  text-transform: uppercase;
   opacity: 0.55;
 }
 .keys .key:not(.zero) { color: rgba(0, 0, 0, 0.7); }
@@ -296,7 +294,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: lowercase;
+  text-transform: uppercase;
   color: var(--muted);
   margin: 0 0 6px;
 }
