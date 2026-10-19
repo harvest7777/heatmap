@@ -274,13 +274,22 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   margin-top: 48px;
 }
 .zone {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 14px;
   padding: 16px 18px;
-  border: 1px dashed transparent;
+  border: 1.5px dashed var(--zero-edge);
   border-radius: 10px;
   background: var(--surface);
   min-width: 0;
+  transition: border-color 150ms, background-color 150ms;
 }
-.zone.over { border-color: var(--accent); }
+.zone.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.zone-body { min-width: 0; }
+.drop-icon { color: var(--muted); padding-top: 2px; }
+.drop-icon svg { display: block; width: 22px; height: 26px; }
+.zone.over .drop-icon { color: var(--accent); }
 .zone h2 {
   font-size: 12px;
   font-weight: 600;

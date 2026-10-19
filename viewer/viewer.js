@@ -526,6 +526,8 @@ function dropZone(zone, onFiles) {
   });
 }
 
+for (const el of document.querySelectorAll('[data-icon]')) el.innerHTML = ICON_SVGS[el.dataset.icon];
+
 dropZone($('drop'), addFiles);
 dropZone($('keymap-drop'), (files) => addKeymap(files));
 $('picker').addEventListener('change', (e) => {
