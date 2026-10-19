@@ -209,7 +209,6 @@ function render() {
 
   const max = Math.max(0, ...counts);
   $('legend-max').textContent = `${max.toLocaleString()} ${max === 1 ? 'press' : 'presses'}`;
-  renderSummary();
   $('board-wrap').classList.toggle('is-empty', state.files.size === 0);
 
   renderTabs();
@@ -472,15 +471,6 @@ async function addKeymap(fileList) {
     return;
   }
   render();
-}
-
-function renderSummary() {
-  let total = 0;
-  for (const f of state.files.values()) total += f.total;
-  const n = state.files.size;
-  $('summary').textContent = n
-    ? `${total.toLocaleString()} presses from ${n} ${n === 1 ? 'session' : 'sessions'}`
-    : 'No sessions loaded';
 }
 
 // Shrink the board to fit narrow screens

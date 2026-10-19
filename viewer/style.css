@@ -25,7 +25,7 @@
  * SOFTWARE.
  */
 
-/* Layout: title and summary with the mode switch, then layer tabs with the
+/* Layout: title with the mode switch, then layer tabs with the
    legend, then the board at full width, then the file inputs */
 :root {
   --text: #2b2d31;
@@ -77,18 +77,11 @@ main { padding-block: 32px 0; }
 
 header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px 24px;
 }
-.summary {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-}
-
 h1 {
   font-size: 26px;
   font-weight: 650;
