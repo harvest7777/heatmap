@@ -188,6 +188,22 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   color: var(--muted);
   font-size: 14px;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+/* No sessions yet: a greyed-out board that can't be used, and the hint on hover
+   (always shown where there's no hover, like phones) */
+#board-wrap.is-empty { cursor: not-allowed; }
+#board-wrap.is-empty #board { opacity: 0.35; filter: grayscale(1); }
+#board-wrap.is-empty .key { pointer-events: none; }
+#board-wrap.is-empty:hover .empty { opacity: 1; }
+@media (hover: none) {
+  #board-wrap.is-empty .empty { opacity: 1; }
+}
+#board-wrap:not(.is-empty) .empty { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .empty { transition: none; }
 }
 
 /* Scaled down by viewer.js to fit narrow screens */

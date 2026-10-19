@@ -210,7 +210,7 @@ function render() {
   const max = Math.max(0, ...counts);
   $('legend-max').textContent = `${max.toLocaleString()} ${max === 1 ? 'press' : 'presses'}`;
   renderSummary();
-  $('empty').hidden = state.files.size > 0;
+  $('board-wrap').classList.toggle('is-empty', state.files.size === 0);
 
   renderTabs();
   renderFiles();
